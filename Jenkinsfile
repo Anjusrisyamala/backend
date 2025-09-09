@@ -7,9 +7,9 @@ pipeline {
     }
 
     environment {
-        TOMCAT_URL = 'http://localhost:9090/manager/html'
+        TOMCAT_URL = 'http://localhost:9090/manager/text'   
         TOMCAT_USER = 'admin'
-        TOMCAT_PASS = '1234'
+        TOMCAT_PASS = 'admin123'
 
         BACKEND_REPO = 'https://github.com/Anjusrisyamala/backend.git'
         FRONTEND_REPO = 'https://github.com/Anjusrisyamala/e-com.git'
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     def nodeHome = tool name: 'NODE_HOME', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-                    env.PATH = "${nodeHome}\\bin;${env.PATH}"
+                    env.PATH = "${nodeHome}/bin;${env.PATH}"
                 }
                 dir("${env.FRONTEND_DIR}") {
                     bat 'npm install'
@@ -49,7 +49,7 @@ pipeline {
         stage('Package React as WAR') {
             steps {
                 script {
-                    def warDir = "${env.FRONTEND_DIR}\\war_content"
+                    def warDir = "${env.FRONTEND_DIR}/war_content"
                     bat "if exist ${warDir} rmdir /S /Q ${warDir}"
                     bat "mkdir ${warDir}\\META-INF"
                     bat "mkdir ${warDir}\\WEB-INF"
@@ -70,13 +70,21 @@ pipeline {
 
         stage('Deploy Spring Boot WAR') {
             steps {
-                bat "curl -u ${env.TOMCAT_USER}:${env.TOMCAT_PASS} --upload-file \"${env.BACKEND_WAR}\" \"${env.TOMCAT_URL}/deploy?path=/springapp1&update=true\""
+                bat """
+                    curl -u ${env.TOMCAT_USER}:${env.TOMCAT_PASS} ^
+                    --upload-file "${env.BACKEND_WAR}" ^
+                    "${env.TOMCAT_URL}/deploy?path=/springapp1&update=true"
+                """
             }
         }
 
         stage('Deploy Frontend WAR') {
             steps {
-                bat "curl -u ${env.TOMCAT_USER}:${env.TOMCAT_PASS} --upload-file \"${env.FRONTEND_WAR}\" \"${env.TOMCAT_URL}/deploy?path=/frontapp1&update=true\""
+                bat """
+                    curl -u ${env.TOMCAT_USER}:${env.TOMCAT_PASS} ^
+                    --upload-file "${env.FRONTEND_WAR}" ^
+                    "${env.TOMCAT_URL}/deploy?path=/frontapp1&update=true"
+                """
             }
         }
     }
