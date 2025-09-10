@@ -9,7 +9,7 @@ pipeline {
     environment {
         TOMCAT_URL = 'http://localhost:9090/manager/text'   
         TOMCAT_USER = 'admin'
-        TOMCAT_PASS = 'admin123'
+        TOMCAT_PASS = '1234'
 
         BACKEND_REPO = 'https://github.com/Anjusrisyamala/backend.git'
         FRONTEND_REPO = 'https://github.com/Anjusrisyamala/e-com.git'
